@@ -1078,13 +1078,7 @@ public class ModbusClient {
             int mask = Convert.ToInt32(Math.Pow(2, (i % 8)));
             response[i] = Convert.ToBoolean((intData & mask) / mask);
         }
-        return (response);
-    }
-
-    private void EnsureSerialPortOpen() {
-        if (serialport == null || !serialport.IsOpen) {
-            throw new SerialPortNotOpenedException("Serial port not opened");
-        }
+        return response;
     }
 
     /// <summary>
@@ -1095,7 +1089,9 @@ public class ModbusClient {
     /// <returns>Int Array which contains the holding registers</returns>
     public ushort[] ReadHoldingRegisters(ushort startingAddress, int quantity) {
 
-        EnsureSerialPortOpen();
+        if (serialport == null || !serialport.IsOpen) {
+            throw new SerialPortNotOpenedException("Serial port not opened");
+        }
 
         if (startingAddress < 0 || startingAddress > 0xFFFF) {
             throw new ArgumentOutOfRangeException(nameof(startingAddress));
